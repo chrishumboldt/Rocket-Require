@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+	<meta charset="utf-8">
+	<meta http-equiv="x-ua-compatible" content="ie=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<title>Rocket Require</title>
+
+</head>
+<body>
+
+	<script src="js/require.min.js"></script>
+	<script>
+	Rocket.module.add({
+		name: 'angular',
+		js: 'angular/angular.min.js'
+	});
+	Rocket.module.add({
+		name: 'button',
+		js: 'rocket-button/js/button.min.js',
+		css: 'rocket-button/css/button.min.css'
+	});
+	Rocket.module.add({
+		name: 'inject',
+		requires: ['mustache'],
+		js: 'rocket-inject/js/inject-lean.min.js'
+	});
+	Rocket.module.add({
+		name: 'mustache',
+		js: 'mustache/mustache.min.js'
+	});
+	Rocket.module.add({
+		name: 'propel',
+		css: 'rocket-propel/css/propel.min.css'
+	});
+
+	console.log(Rocket.module.list);
+
+	Rocket.require(['angular', 'button', 'inject', 'propel'], function () {
+		console.log('yay');
+	});
+	</script>
+
+</body>
+</html>

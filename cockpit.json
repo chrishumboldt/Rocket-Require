@@ -1,0 +1,25 @@
+{
+	"modules": {
+		"angular": {
+			"js": "angular/angular.min.js"
+		},
+		"button": {
+			"js": "rocket-button/js/button.min.js",
+			"css": "rocket-button/css/button.min.css"
+		},
+		"inject": {
+			"requires": ["mustache"],
+			"js": "rocket-inject/js/inject-lean.min.js"
+		},
+		"mustache": {
+			"js": "mustache/mustache.min.js"
+		},
+		"propel": {
+			"css": "rocket-propel/css/propel.min.css"
+		}
+	},
+	"build": [{
+		"name": "require",
+		"js": ["require.js"]
+	}]
+}
