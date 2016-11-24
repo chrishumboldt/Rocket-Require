@@ -4,8 +4,6 @@
  * Author: Chris Humboldt
 **/
 
-'user strict';
-
 // Rocket module extension
 // NOTE: You do not need Rocket for this module to be used.
 // This allows you to extend Rocket or use independently. Both will work.
