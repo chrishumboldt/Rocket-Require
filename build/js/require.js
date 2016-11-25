@@ -1,4 +1,3 @@
-'user strict';
 var Rocket = (typeof Rocket === 'object') ? Rocket : {};
 if (!Rocket.defaults) {
     Rocket.defaults = {};
@@ -7,10 +6,19 @@ Rocket.defaults.require = {
     errors: true,
     rootUrl: './node_modules/'
 };
+function RockMod_RequireLoadMain() {
+    var loadMainScript = document.querySelector('script[data-main]');
+    if (loadMainScript) {
+        var mainFile = loadMainScript.getAttribute('data-main');
+        if (typeof mainFile === 'string' && mainFile.length > 0) {
+            RockMod_Require.load(mainFile, false, './');
+        }
+    }
+}
+;
 var RockMod_Module;
 (function (RockMod_Module) {
     var listModules = {};
-    var listLoaded = [];
     var moduleMethods = {
         add: function (obj) {
             if (!validate.module(obj)) {
@@ -29,23 +37,6 @@ var RockMod_Module;
                 listModules[obj.name].requires = obj.requires;
             }
         },
-        exists: function (name) {
-            if (typeof name !== 'string') {
-                return false;
-            }
-            return (typeof listModules[name] === 'undefined') ? false : true;
-        },
-        get: function (name) {
-            if (this.exists(name)) {
-                return listModules[name];
-            }
-        },
-        isLoaded: function (name) {
-            if (typeof name !== 'string') {
-                return false;
-            }
-            return (listLoaded.indexOf(name) < 0) ? false : true;
-        },
         dependencies: function (name) {
             if (typeof name !== 'string') {
                 return false;
@@ -60,7 +51,7 @@ var RockMod_Module;
                             var moduleName = _a[_i];
                             if (dependencies.indexOf(moduleName) > -1) {
                                 if (Rocket.defaults.require.errors) {
-                                    throw new Error('Rocket Require: You have a dependency loop with module: ' + name);
+                                    throw new Error('ROCKET REQUIRE: You have a dependency loop with module: ' + name);
                                 }
                                 else {
                                     return false;
@@ -74,6 +65,34 @@ var RockMod_Module;
             ;
             checkModule(name);
             return dependencies;
+        },
+        exists: function (name) {
+            if (typeof name !== 'string') {
+                return false;
+            }
+            return (typeof listModules[name] === 'undefined') ? false : true;
+        },
+        get: function (name) {
+            if (typeof name !== 'string') {
+                return false;
+            }
+            return listModules[name];
+        },
+        isLoaded: function (name) {
+            if (typeof name !== 'string') {
+                return false;
+            }
+            var thisModule = listModules[name];
+            return (typeof thisModule === 'object') ? thisModule.loaded : false;
+        },
+        listLoaded: function () {
+            var listLoaded = [];
+            for (var key in listModules) {
+                if (listModules.hasOwnProperty(key) && listModules[key].loaded) {
+                    listLoaded.push(key);
+                }
+            }
+            return listLoaded;
         },
         remove: function (name) {
             if (typeof name !== 'string' || listModules[name] === 'undefined') {
@@ -121,26 +140,27 @@ var RockMod_Module;
     RockMod_Module.isLoaded = moduleMethods.isLoaded;
     RockMod_Module.dependencies = moduleMethods.dependencies;
     RockMod_Module.list = listModules;
-    RockMod_Module.loaded = listLoaded;
+    RockMod_Module.loaded = moduleMethods.listLoaded;
     RockMod_Module.remove = moduleMethods.remove;
 })(RockMod_Module || (RockMod_Module = {}));
 var RockMod_Require;
 (function (RockMod_Require) {
-    var modules = [];
-    function loadFile(file, callback) {
+    function loadFile(file, thisCallback, customRootUrl) {
+        var callback = (typeof thisCallback === 'function') ? thisCallback : function () { };
         var theInclude;
         var type;
+        var rootUrl = (typeof customRootUrl === 'string') ? customRootUrl : Rocket.defaults.require.rootUrl;
         if (/(.css)$/.test(file)) {
             type = 'css';
             theInclude = document.createElement('link');
             theInclude.rel = 'stylesheet';
-            theInclude.href = Rocket.defaults.require.rootUrl + file;
+            theInclude.href = rootUrl + file;
         }
         else if (/(.js)$/.test(file)) {
             type = 'js';
             theInclude = document.createElement('script');
             theInclude.setAttribute('async', true);
-            theInclude.src = Rocket.defaults.require.rootUrl + file;
+            theInclude.src = rootUrl + file;
         }
         theInclude.onload = function () {
             if (type !== 'js' && Object.hasOwnProperty.call(window, "ActiveXObject") && !window['ActiveXObject']) {
@@ -162,7 +182,6 @@ var RockMod_Require;
         };
         document.getElementsByTagName('head')[0].appendChild(theInclude);
     }
-    ;
     function loadModuleFiles(name, thisModule, callback) {
         var count = 0;
         var files = [];
@@ -187,65 +206,70 @@ var RockMod_Require;
             loadFile(file, function (response) {
                 count--;
                 if (count === 0) {
-                    if (response) {
-                        Rocket.module.loaded.push(name);
-                    }
-                    modules.splice(modules.indexOf(name), 1);
                     return callback(true);
                 }
-            });
+            }, false);
         }
     }
-    ;
-    function initialise(names, callback) {
-        if (!Rocket.module.isArray(names)) {
-            return false;
+    var Require = (function () {
+        function Require() {
+            this.modules = [];
         }
-        function loadModules(names, callback) {
-            var _loop_1 = function (name_1) {
-                if (!Rocket.module.isLoaded(name_1) && Rocket.module.exists(name_1)) {
-                    var thisModule_1 = Rocket.module.get(name_1);
-                    var dependencies = (Rocket.module.isArray(thisModule_1.requires) && thisModule_1.requires.length > 0) ? thisModule_1.requires : false;
-                    if (!thisModule_1.loaded) {
-                        thisModule_1.loaded = true;
-                        if (!dependencies) {
-                            loadModuleFiles(name_1, thisModule_1, function () {
-                                callback();
-                            });
-                        }
-                        else {
-                            loadModules(dependencies, function () {
-                                loadModuleFiles(name_1, thisModule_1, function () {
-                                    callback();
-                                });
-                            });
-                        }
-                    }
-                }
-            };
-            for (var _i = 0, names_1 = names; _i < names_1.length; _i++) {
-                var name_1 = names_1[_i];
-                _loop_1(name_1);
+        Require.prototype.add = function (name) {
+            if (typeof name !== 'string' || !Rocket.module.exists(name) || this.modules.indexOf(name) > -1) {
+                return false;
             }
-        }
-        ;
-        function setModulesList() {
-            for (var _i = 0, names_2 = names; _i < names_2.length; _i++) {
-                var name_2 = names_2[_i];
-                modules = modules.concat(Rocket.module.dependencies(name_2));
-            }
-            modules = modules.filter(function (value, index, self) {
+            this.modules = this.modules.concat(Rocket.module.dependencies(name));
+            this.modules = this.modules.filter(function (value, index, self) {
                 return self.indexOf(value) === index;
             });
-        }
-        setModulesList();
-        loadModules(names, function () {
-            if (modules.length === 0) {
-                return callback(true);
+        };
+        Require.prototype.load = function (callback) {
+            var listModules = this.modules;
+            function loadModules(names, callback) {
+                var _loop_1 = function (name_1) {
+                    if (!Rocket.module.isLoaded(name_1) && Rocket.module.exists(name_1)) {
+                        var thisModule_1 = Rocket.module.get(name_1);
+                        var dependencies = (Rocket.module.isArray(thisModule_1.requires) && thisModule_1.requires.length > 0) ? thisModule_1.requires : false;
+                        if (!thisModule_1.loaded) {
+                            thisModule_1.loaded = true;
+                            if (!dependencies) {
+                                loadModuleFiles(name_1, thisModule_1, function () {
+                                    listModules.splice(listModules.indexOf(name_1), 1);
+                                    callback();
+                                });
+                            }
+                            else {
+                                loadModules(dependencies, function () {
+                                    loadModuleFiles(name_1, thisModule_1, function () {
+                                        listModules.splice(listModules.indexOf(name_1), 1);
+                                        callback();
+                                    });
+                                });
+                            }
+                        }
+                    }
+                };
+                for (var _i = 0, names_1 = names; _i < names_1.length; _i++) {
+                    var name_1 = names_1[_i];
+                    _loop_1(name_1);
+                }
             }
-        });
-    }
-    RockMod_Require.init = initialise;
+            loadModules(listModules, function () {
+                if (typeof callback === 'function') {
+                    if (listModules.length === 0) {
+                        return callback(true);
+                    }
+                }
+            });
+        };
+        return Require;
+    }());
+    RockMod_Require.newRequire = Require;
+    RockMod_Require.load = loadFile;
 })(RockMod_Require || (RockMod_Require = {}));
 Rocket.module = RockMod_Module;
-Rocket.require = RockMod_Require.init;
+Rocket.require = function () {
+    return new RockMod_Require.newRequire;
+};
+RockMod_RequireLoadMain();
