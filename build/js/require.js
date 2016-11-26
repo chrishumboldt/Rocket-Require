@@ -246,22 +246,20 @@ var RockMod_Require;
                         else {
                             var thisModule_1 = Rocket.module.get(name_1);
                             var dependencies = (Rocket.module.isArray(thisModule_1.requires) && thisModule_1.requires.length > 0) ? thisModule_1.requires : false;
-                            if (!thisModule_1.loaded) {
-                                thisModule_1.loaded = true;
-                                if (!dependencies) {
+                            thisModule_1.loaded = true;
+                            if (!dependencies) {
+                                loadModuleFiles(name_1, thisModule_1, function () {
+                                    listModules.splice(listModules.indexOf(name_1), 1);
+                                    callback();
+                                });
+                            }
+                            else {
+                                loadModules(dependencies, function () {
                                     loadModuleFiles(name_1, thisModule_1, function () {
                                         listModules.splice(listModules.indexOf(name_1), 1);
                                         callback();
                                     });
-                                }
-                                else {
-                                    loadModules(dependencies, function () {
-                                        loadModuleFiles(name_1, thisModule_1, function () {
-                                            listModules.splice(listModules.indexOf(name_1), 1);
-                                            callback();
-                                        });
-                                    });
-                                }
+                                });
                             }
                         }
                     }

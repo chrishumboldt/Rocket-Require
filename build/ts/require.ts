@@ -334,24 +334,22 @@ module RockMod_Require {
                   else {
                      let thisModule = Rocket.module.get(name);
                      let dependencies = (Rocket.module.isArray(thisModule.requires) && thisModule.requires.length > 0) ? thisModule.requires : false;
-                     // Catch
-                     if (!thisModule.loaded) {
-                        thisModule.loaded = true;
-                        // Check dependency
-                        if (!dependencies) {
+                     
+                     thisModule.loaded = true;
+                     // Check dependency
+                     if (!dependencies) {
+                        loadModuleFiles(name, thisModule, function () {
+                           listModules.splice(listModules.indexOf(name), 1);
+                           callback();
+                        });
+                     }
+                     else {
+                        loadModules(dependencies, function () {
                            loadModuleFiles(name, thisModule, function () {
                               listModules.splice(listModules.indexOf(name), 1);
                               callback();
                            });
-                        }
-                        else {
-                           loadModules(dependencies, function () {
-                              loadModuleFiles(name, thisModule, function () {
-                                 listModules.splice(listModules.indexOf(name), 1);
-                                 callback();
-                              });
-                           });
-                        }
+                        });
                      }
                   }
                }
