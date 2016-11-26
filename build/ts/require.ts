@@ -299,7 +299,7 @@ module RockMod_Require {
       }
 
       /*
-      The laod function will take the newly created require instance and execute
+      The load function will take the newly created require instance and execute
       the loading of each module in the various dependency stacks.
       */
       public load (callback:any) {
