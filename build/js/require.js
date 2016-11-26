@@ -21,6 +21,9 @@ var RockMod_Module;
     var listModules = {};
     var moduleMethods = {
         add: function (obj) {
+            if (typeof obj !== 'object') {
+                return false;
+            }
             for (var key in obj) {
                 if (obj.hasOwnProperty(key)) {
                     if (validate.module(key, obj[key])) {

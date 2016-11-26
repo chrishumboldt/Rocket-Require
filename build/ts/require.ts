@@ -48,6 +48,11 @@ module RockMod_Module {
    */
    let moduleMethods = {
       add: function (obj:module) {
+         // Catch
+         if (typeof obj !== 'object') {
+            return false;
+         }
+         // Continue
          for (let key in obj) {
             if (obj.hasOwnProperty(key)) {
                if (validate.module(key, obj[key])) {
