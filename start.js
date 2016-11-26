@@ -1,28 +1,35 @@
 Rocket.module.add({
-   name: 'angular',
-   js: 'angular/angular.min.js'
-});
-Rocket.module.add({
-   name: 'button',
-   js: 'rocket-button/js/button.min.js',
-   css: 'rocket-button/css/button.min.css'
-});
-Rocket.module.add({
-   name: 'inject',
-   requires: ['mustache'],
-   js: 'rocket-inject/js/inject-lean.min.js'
-});
-Rocket.module.add({
-   name: 'mustache',
-   js: 'mustache/mustache.min.js'
-});
-Rocket.module.add({
-   name: 'propel',
-   css: 'rocket-propel/css/propel.min.css'
+   angular: {
+      js: 'angular/angular.min.js'
+   },
+   button: {
+      js: 'rocket-button/js/button.min.js',
+      css: 'rocket-button/css/button.min.css'
+   },
+   inject: {
+      requires: ['mustache'],
+      js: 'rocket-inject/js/inject-lean.min.js'
+   },
+   mustache: {
+      js: 'mustache/mustache.min.js'
+   },
+   propel: {
+      css: 'rocket-propel/css/propel.min.css'
+   },
+   tester: {
+      js: '../tester.js'
+   }
 });
 
 // Require
 var require = Rocket.require();
 require.add('inject');
 require.add('propel');
-require.load();
+
+require.load(function () {
+   Rocket.inject.component({
+      name: 'Tester',
+      html: '<p>This is a test.</p>'
+   });
+   console.log(Rocket.inject.list);
+});
