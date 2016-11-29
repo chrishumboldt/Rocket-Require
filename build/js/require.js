@@ -156,17 +156,18 @@ var RockMod_Require;
         var theInclude;
         var type;
         var rootUrl = (typeof customRootUrl === 'string') ? customRootUrl : Rocket.defaults.require.rootUrl;
+        var filePath = (isURL(file)) ? file : rootUrl + file;
         if (/(.css)$/.test(file)) {
             type = 'css';
             theInclude = document.createElement('link');
             theInclude.rel = 'stylesheet';
-            theInclude.href = rootUrl + file;
+            theInclude.href = filePath;
         }
         else if (/(.js)$/.test(file)) {
             type = 'js';
             theInclude = document.createElement('script');
             theInclude.setAttribute('async', true);
-            theInclude.src = rootUrl + file;
+            theInclude.src = filePath;
         }
         theInclude.onload = function () {
             if (type !== 'js' && Object.hasOwnProperty.call(window, "ActiveXObject") && !window['ActiveXObject']) {
@@ -217,9 +218,13 @@ var RockMod_Require;
             }, false);
         }
     }
+    function isURL(check) {
+        return /^(https?:\/\/[^\s]+)/.test(check);
+    }
     var Require = (function () {
         function Require() {
             this.modules = [];
+            this.modulesCount = 0;
         }
         Require.prototype.add = function (name) {
             if (typeof name !== 'string' || !Rocket.module.exists(name) || this.modules.indexOf(name) > -1) {
@@ -229,10 +234,16 @@ var RockMod_Require;
             this.modules = this.modules.filter(function (value, index, self) {
                 return self.indexOf(value) === index;
             });
+            this.modulesCount = this.modules.length;
         };
         Require.prototype.load = function (callback) {
             var listModules = this.modules;
+            var modulesCount = this.modulesCount;
             function loadModules(names, callback) {
+                function loadModulesDone() {
+                    modulesCount--;
+                    callback();
+                }
                 var _loop_1 = function (name_1) {
                     if (!Rocket.module.exists(name_1)) {
                         if (Rocket.defaults.require.errors) {
@@ -249,15 +260,13 @@ var RockMod_Require;
                             thisModule_1.loaded = true;
                             if (!dependencies) {
                                 loadModuleFiles(name_1, thisModule_1, function () {
-                                    listModules.splice(listModules.indexOf(name_1), 1);
-                                    callback();
+                                    loadModulesDone();
                                 });
                             }
                             else {
                                 loadModules(dependencies, function () {
                                     loadModuleFiles(name_1, thisModule_1, function () {
-                                        listModules.splice(listModules.indexOf(name_1), 1);
-                                        callback();
+                                        loadModulesDone();
                                     });
                                 });
                             }
@@ -269,13 +278,14 @@ var RockMod_Require;
                     _loop_1(name_1);
                 }
             }
-            loadModules(listModules, function () {
-                if (typeof callback === 'function') {
-                    if (listModules.length === 0) {
-                        return callback(true);
+            for (var _i = 0, _a = this.modules; _i < _a.length; _i++) {
+                var thisModule = _a[_i];
+                loadModules([thisModule], function () {
+                    if (modulesCount === 0 && typeof callback === 'function') {
+                        return callback();
                     }
-                }
-            });
+                });
+            }
         };
         return Require;
     }());

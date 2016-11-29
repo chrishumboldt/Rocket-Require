@@ -1,6 +1,6 @@
 Rocket.module.add({
    angular: {
-      js: 'angular/angular.min.js'
+      js: 'https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js'
    },
    button: {
       js: 'rocket-button/js/button.min.js',
@@ -16,20 +16,23 @@ Rocket.module.add({
    propel: {
       css: 'rocket-propel/css/propel.min.css'
    },
-   tester: {
-      js: '../tester.js'
+   jquery: {
+      js: 'https://code.jquery.com/jquery-3.1.1.js'
    }
 });
 
 // Require
+
 var require = Rocket.require();
+require.add('button');
 require.add('inject');
 require.add('propel');
 
 require.load(function () {
-   Rocket.inject.component({
-      name: 'Tester',
-      html: '<p>This is a test.</p>'
-   });
-   console.log(Rocket.inject.list);
+   console.log(Rocket.inject);
+   // Rocket.inject.component({
+   //    name: 'Tester',
+   //    html: '<p>This is a test.</p>'
+   // });
+   // console.log(Rocket.inject.list);
 });

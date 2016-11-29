@@ -199,20 +199,19 @@ module RockMod_Require {
       let theInclude:any;
       let type;
       let rootUrl = (typeof customRootUrl === 'string') ? customRootUrl : Rocket.defaults.require.rootUrl;
-      let filePath = (isURL(file)) ? file : rootUrl + file;
 
       // Create include element
       if (/(.css)$/.test(file)) {
          type = 'css';
          theInclude = document.createElement('link');
          theInclude.rel = 'stylesheet';
-         theInclude.href = filePath;
+         theInclude.href = rootUrl + file;
       }
       else if (/(.js)$/.test(file)) {
          type = 'js';
          theInclude = document.createElement('script');
          theInclude.setAttribute('async', true);
-         theInclude.src = filePath;
+         theInclude.src = rootUrl + file;
       }
 
       // Listen for completion
@@ -275,9 +274,6 @@ module RockMod_Require {
          }, false);
       }
    }
-   function isURL (check:string) {
-      return /^(https?:\/\/[^\s]+)/.test(check);
-   }
 
    // Require instance
    /*
@@ -285,10 +281,8 @@ module RockMod_Require {
    */
    class Require {
       modules:string[];
-      modulesCount:number;
       constructor () {
          this.modules = [];
-         this.modulesCount = 0;
       }
 
       // Functions
@@ -302,7 +296,6 @@ module RockMod_Require {
          this.modules = this.modules.filter(function (value, index, self) {
             return self.indexOf(value) === index;
          });
-         this.modulesCount = this.modules.length;
       }
 
       /*
@@ -312,14 +305,9 @@ module RockMod_Require {
       public load (callback:any) {
          // Variables
          let listModules = this.modules;
-         let modulesCount = this.modulesCount;
 
          // Functions
          function loadModules (names:string[], callback:any) {
-            function loadModulesDone () {
-               modulesCount--;
-               callback();
-            }
             for (let name of names) {
                /*
                Check to see if the module exists. Rocket require is explicit and will
@@ -351,13 +339,15 @@ module RockMod_Require {
                      // Check dependency
                      if (!dependencies) {
                         loadModuleFiles(name, thisModule, function () {
-                           loadModulesDone();
+                           listModules.splice(listModules.indexOf(name), 1);
+                           callback();
                         });
                      }
                      else {
                         loadModules(dependencies, function () {
                            loadModuleFiles(name, thisModule, function () {
-                              loadModulesDone();
+                              listModules.splice(listModules.indexOf(name), 1);
+                              callback();
                            });
                         });
                      }
@@ -365,15 +355,18 @@ module RockMod_Require {
                }
             }
          }
-
          // Execute
-         for (let thisModule of this.modules) {
-            loadModules([thisModule], function () {
-               if (modulesCount === 0 && typeof callback === 'function') {
-                  return callback();
+         /*
+         Begin the module loading and resolve the top level requires as you
+         would all other dependency level requires.
+         */
+         loadModules(listModules, function () {
+            if (typeof callback === 'function') {
+               if (listModules.length === 0) {
+                  return callback(true);
                }
-            });
-         }
+            }
+         });
       }
    }
 
