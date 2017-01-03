@@ -7,7 +7,7 @@ Rocket.module.add({
       css: 'rocket-button/css/button.min.css'
    },
    inject: {
-      requires: ['mustache'],
+      requires: ['button', 'mustache'],
       js: 'rocket-inject/js/inject-lean.min.js'
    },
    mustache: {
@@ -24,12 +24,11 @@ Rocket.module.add({
 // Require
 
 var require = Rocket.require();
-require.add('button');
 require.add('inject');
-require.add('propel');
+// require.add('propel');
 
 require.load(function () {
-   console.log(Rocket.inject);
+   // console.log(Rocket.inject);
    // Rocket.inject.component({
    //    name: 'Tester',
    //    html: '<p>This is a test.</p>'

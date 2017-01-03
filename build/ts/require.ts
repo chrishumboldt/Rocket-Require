@@ -316,10 +316,18 @@ module RockMod_Require {
 
          // Functions
          function loadModules (names:string[], callback:any) {
+            var namesCount = names.length;
+
+            // Functions
             function loadModulesDone () {
                modulesCount--;
-               callback();
+               namesCount--;
+               if (namesCount === 0) {
+                  callback();
+               }
             }
+
+            // Execute
             for (let name of names) {
                /*
                Check to see if the module exists. Rocket require is explicit and will
@@ -337,7 +345,7 @@ module RockMod_Require {
                   Return the callback and move on.
                   */
                   if (Rocket.module.isLoaded(name)) {
-                     callback();
+                     loadModulesDone();
                   }
                   /*
                   If the module has not yet been loaded, do the neccessary checks and

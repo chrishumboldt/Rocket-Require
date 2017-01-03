@@ -240,9 +240,13 @@ var RockMod_Require;
             var listModules = this.modules;
             var modulesCount = this.modulesCount;
             function loadModules(names, callback) {
+                var namesCount = names.length;
                 function loadModulesDone() {
                     modulesCount--;
-                    callback();
+                    namesCount--;
+                    if (namesCount === 0) {
+                        callback();
+                    }
                 }
                 var _loop_1 = function (name_1) {
                     if (!Rocket.module.exists(name_1)) {
@@ -252,7 +256,7 @@ var RockMod_Require;
                     }
                     else {
                         if (Rocket.module.isLoaded(name_1)) {
-                            callback();
+                            loadModulesDone();
                         }
                         else {
                             var thisModule_1 = Rocket.module.get(name_1);
