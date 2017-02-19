@@ -193,7 +193,7 @@ module RockMod_Module {
 module RockMod_Require {
 
    // Functions
-   function loadFile (file, thisCallback, customRootPath: any) {
+   function loadFile(file, thisCallback, customRootPath: any) {
       let callback = (Rocket.is.function(thisCallback)) ? thisCallback : function () {};
       let theInclude: any;
       let type;
@@ -239,7 +239,7 @@ module RockMod_Require {
    }
 
    // Load module files
-   function loadModuleFiles (name, thisModule, callback) {
+   function loadModuleFiles(name, thisModule, callback) {
       let count = 0;
       let files = [];
 
@@ -290,7 +290,7 @@ module RockMod_Require {
       }
 
       // Functions
-      public add (name:string) {
+      public add(name:string) {
          // Check
          if (!Rocket.is.string(name)
          || !Rocket.module.exists(name)
@@ -308,7 +308,7 @@ module RockMod_Require {
       The load function will take the newly created require instance and execute
       the loading of each module in the various dependency stacks.
       */
-      public load (callback: any) {
+      public load(callback: any) {
          // Variables
          const self = this;
          let listModules = self.modules.reverse();
