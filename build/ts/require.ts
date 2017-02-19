@@ -145,6 +145,7 @@ module RockMod_Module {
          return paths;
       }
    };
+   
    let validate = {
       module: (name: string, obj: module) => {
          let hasCSS = false;
