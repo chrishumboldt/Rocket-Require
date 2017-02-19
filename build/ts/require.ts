@@ -1,8 +1,8 @@
-/**
- * Author: Chris Humboldt
-**/
+/*
+Author: Chris Humboldt
+*/
 
-// Extedn Rocket
+// Extend Rocket
 Rocket.defaults.require = {
    errors: true,
    rootPath: './node_modules/'
@@ -145,7 +145,7 @@ module RockMod_Module {
          return paths;
       }
    };
-   
+
    let validate = {
       module: (name: string, obj: module) => {
          let hasCSS = false;
@@ -364,7 +364,6 @@ module RockMod_Require {
                   let dependencies = (Rocket.is.array(thisModule.requires) && thisModule.requires.length > 0) ? thisModule.requires : false;
 
                   // Change state to loaded
-                  // removeModule(name);
                   thisModule.loaded = true;
 
                   // Check dependency
