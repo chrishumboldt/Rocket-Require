@@ -193,8 +193,7 @@ module RockMod_Module {
 module RockMod_Require {
 
    // Functions
-   function loadFile(file, thisCallback, customRootPath: any) {
-      let callback = (Rocket.is.function(thisCallback)) ? thisCallback : function () {};
+   function loadFile(file, callback, customRootPath: any) {
       let theInclude: any;
       let type;
       let rootUrl = (Rocket.is.string(customRootPath)) ? customRootPath : '';
@@ -216,23 +215,23 @@ module RockMod_Require {
       // Listen for completion
       theInclude.onload = () => {
          if (type !== 'js' && Object.hasOwnProperty.call(window, "ActiveXObject") && !window['ActiveXObject']) {
-            return callback(false);
+            if (Rocket.is.function(callback)) { return callback(false); }
          }
 
-         return callback(true);
+         if (Rocket.is.function(callback)) { return callback(true); }
       };
       theInclude.onreadystatechange = function () {
          if (!this.readyState || this.readyState === 'loaded' || this.readyState === 'complete') {
             this.onreadystatechange = null;
-            if (type === 'js') {
+            if (type === 'js' && Rocket.is.function(callback)) {
                return callback(false);
             }
 
-            return callback(true);
+            if (Rocket.is.function(callback)) { return callback(true); }
          }
       };
       theInclude.onerror = () => {
-         return callback(false);
+         if (Rocket.is.function(callback)) { return callback(false); }
       };
 
       document.getElementsByTagName('head')[0].appendChild(theInclude);

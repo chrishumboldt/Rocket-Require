@@ -153,8 +153,7 @@ var RockMod_Module;
 })(RockMod_Module || (RockMod_Module = {}));
 var RockMod_Require;
 (function (RockMod_Require) {
-    function loadFile(file, thisCallback, customRootPath) {
-        var callback = (Rocket.is.function(thisCallback)) ? thisCallback : function () { };
+    function loadFile(file, callback, customRootPath) {
         var theInclude;
         var type;
         var rootUrl = (Rocket.is.string(customRootPath)) ? customRootPath : '';
@@ -173,21 +172,29 @@ var RockMod_Require;
         }
         theInclude.onload = function () {
             if (type !== 'js' && Object.hasOwnProperty.call(window, "ActiveXObject") && !window['ActiveXObject']) {
-                return callback(false);
+                if (Rocket.is.function(callback)) {
+                    return callback(false);
+                }
             }
-            return callback(true);
+            if (Rocket.is.function(callback)) {
+                return callback(true);
+            }
         };
         theInclude.onreadystatechange = function () {
             if (!this.readyState || this.readyState === 'loaded' || this.readyState === 'complete') {
                 this.onreadystatechange = null;
-                if (type === 'js') {
+                if (type === 'js' && Rocket.is.function(callback)) {
                     return callback(false);
                 }
-                return callback(true);
+                if (Rocket.is.function(callback)) {
+                    return callback(true);
+                }
             }
         };
         theInclude.onerror = function () {
-            return callback(false);
+            if (Rocket.is.function(callback)) {
+                return callback(false);
+            }
         };
         document.getElementsByTagName('head')[0].appendChild(theInclude);
     }
