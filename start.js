@@ -1,11 +1,15 @@
-/**
- * Author: Chris Humboldt
-**/
+/*
+Author: Chris Humboldt
+*/
 
 // Decalre the module
 Rocket.module.add({
    jquery: {
-      js: 'https://code.jquery.com/jquery-3.1.1.js'
+      js: ['https://code.jquery.com/jquery-3.1.1.js']
+   },
+   rocketDemo: {
+      css: ['~/rocket-demo/css/demo.min.css'],
+      js: ['~/rocket-demo/js/demo.min.js'],
    }
 });
 

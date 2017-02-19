@@ -27,10 +27,10 @@ var RockMod_Module;
                             loaded: false
                         };
                         if (Rocket.is.string(obj[key].css) || Rocket.is.array(obj[key].css)) {
-                            listModules[key].css = obj[key].css;
+                            listModules[key].css = moduleMethods.sanitisePaths(obj[key].css);
                         }
                         if (Rocket.is.string(obj[key].js) || Rocket.is.array(obj[key].js)) {
-                            listModules[key].js = obj[key].js;
+                            listModules[key].js = moduleMethods.sanitisePaths(obj[key].js);
                         }
                         if (Rocket.is.array(obj[key].requires)) {
                             listModules[key].requires = obj[key].requires;
@@ -101,6 +101,15 @@ var RockMod_Module;
                 return false;
             }
             delete listModules[name];
+        },
+        sanitisePaths: function (paths) {
+            if (Rocket.is.string(paths)) {
+                paths = [paths];
+            }
+            for (var len = paths.length, i = 0; i < len; i++) {
+                paths[i] = paths[i].replace(/~\//g, Rocket.defaults.require.rootUrl);
+            }
+            return paths;
         }
     };
     var validate = {

@@ -38,35 +38,33 @@ npm install rocket-require
 </pre>
 			<br>
 			<h4>Full Example</h4>
-         <p>In the example below we are attempting to load Bootstrap. We can see that Bootstrap has a dependency on jQuery, which has also been declared. As a result jQuery will be loaded first and once complete all the Bootstrap files will load after.</p>
+         <p>In the example below we are attempting to load a local <a href="https://github.com/chrishumboldt/Rocket-Button" class="link" target="_blank">Rocket Button</a> module. We can see that is a dependency on <a href="https://github.com/chrishumboldt/Rocket-Tools" class="link" target="_blank">Rocket Tools</a>, which has also been declared. As a result Rocket Tools will be loaded first.</p>
          <p>Once all files are present on the DOM a function is called displaying a message.</p>
 <pre class="prettyprint linenums">
 &lt;script&gt;
 // Add the module declaration
 Rocket.module.add({
-   bootstrap: {
-      requires: ['jquery'],
-      css: [
-         'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css',
-         'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css'
-      ],
-      js: 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js'
+   rocketButton: {
+      requires: ['rocketTools'],
+      css: ['~/rocket-button/css/button.min.css']
+      js: ['~/rocket-button/js/button.min.js']
    },
-   jquery: {
-      js: 'https://code.jquery.com/jquery-3.1.1.js'
+   rocketTools: {
+      js: ['~/rocket-tools/js/tools.min.js']
    }
 });
 
 // Initilise the require
 var require = Rocket.require();
-require.add('bootstrap');
+require.add('rocketButton');
 
 // Load
 require.load(function () {
-   $('#success-text').text('jQuery and Bootstrap has just been loaded with Rocket Require!');
+   $('#success-text').text('Rocket Buttons and Rocket Tools have just been loaded with Rocket Require!');
 });
 &lt;/script&gt;
 </pre>
+         <p>You will notice the <b>~/</b> before all the paths. This applies the defaults root url to the path which by default is set to <b>./node_modules</b>.</p>
          <br>
          <h4>Working Example</h4>
          <div id="success-text">Rocket require is currently loading jQuery...</div>
@@ -92,7 +90,7 @@ require.load(function () {
    <!-- Scripts -->
    <script src="node_modules/rocket-tools/js/tools.min.js"></script>
    <script src="node_modules/rocket-demo/js/demo.min.js"></script>
-   <script src="js/require.min.js" data-main="start.js"></script>
+   <script src="build/js/require.js" data-main="start.js"></script>
 
 </body>
 </html>
