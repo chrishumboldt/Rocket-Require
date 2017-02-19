@@ -32,7 +32,7 @@ module RockMod_Module {
    especially within Typescript.
    */
    let moduleMethods = {
-      add: (obj:module) => {
+      add: (obj: module) => {
          // Catch
          if (!Rocket.is.object(obj)) { return false; }
 
