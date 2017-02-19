@@ -1,6 +1,8 @@
 {
 	"build": [{
 		"name": "require",
-		"js": ["require.js"]
+		"js": [
+         "~/require.js"
+      ]
 	}]
 }

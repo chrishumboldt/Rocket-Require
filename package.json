@@ -1,0 +1,35 @@
+{
+  "name": "rocket-require",
+  "version": "1.0.0",
+  "description": "A script and stylesheet loading module.",
+  "main": "js/require.min.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chrishumboldt/Rocket-Require.git"
+  },
+  "keywords": [
+    "Rocket",
+    "Part",
+    "Module",
+    "Require",
+    "Script",
+    "Stylesheet",
+    "Loader",
+    "Javascript"
+  ],
+  "author": "Chris Humboldt <chrismodem@gmail.com>",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/chrishumboldt/Rocket-Require/issues"
+  },
+  "homepage": "https://github.com/chrishumboldt/Rocket-Require#readme",
+  "dependencies": {
+    "rocket-tools": "^1.12.6"
+  },
+  "devDependencies": {
+    "rocket-demo": "^2.0.1"
+  }
+}

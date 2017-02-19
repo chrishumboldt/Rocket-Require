@@ -1,36 +1,21 @@
 /**
-* File: build/ts/require.ts
-* Type: Typescript file
-* Author: Chris Humboldt
+ * Author: Chris Humboldt
 **/
 
-// Rocket module extension
-// NOTE: You do not need Rocket for this module to be used.
-// This allows you to extend Rocket or use independently. Both will work.
-var Rocket = (typeof Rocket === 'object') ? Rocket : {};
-if (!Rocket.defaults) {
-   Rocket.defaults = {};
-}
+// Extedn Rocket
 Rocket.defaults.require = {
    errors: true,
    rootUrl: './node_modules/'
 };
 
-// Interfaces
-interface module {
-   name:string;
-   css:any;
-   js:any;
-   loaded:boolean;
-   requires:string[];
-}
-
 // Load main file (if provided)
 function RockMod_RequireLoadMain () {
    let loadMainScript = document.querySelector('script[data-main]');
+
    if (loadMainScript) {
       const mainFile = loadMainScript.getAttribute('data-main');
-      if (typeof mainFile === 'string' && mainFile.length > 0) {
+
+      if (Rocket.is.string(mainFile) && mainFile.length > 0) {
          RockMod_Require.load(mainFile, false, './');
       }
    }
@@ -47,11 +32,10 @@ module RockMod_Module {
    especially within Typescript.
    */
    let moduleMethods = {
-      add: function (obj:module) {
+      add: (obj:module) => {
          // Catch
-         if (typeof obj !== 'object') {
-            return false;
-         }
+         if (!Rocket.is.object(obj)) { return false; }
+
          // Continue
          for (let key in obj) {
             if (obj.hasOwnProperty(key)) {
@@ -59,33 +43,33 @@ module RockMod_Module {
                   listModules[key] = {
                      loaded: false
                   };
-                  if (typeof obj[key].css === 'string' || isArrayCheck(obj[key].css)) {
+                  if (Rocket.is.string(obj[key].css) || Rocket.is.array(obj[key].css)) {
                      listModules[key].css = obj[key].css;
                   }
-                  if (typeof obj[key].js === 'string' || isArrayCheck(obj[key].js)) {
+                  if (Rocket.is.string(obj[key].js) || Rocket.is.array(obj[key].js)) {
                      listModules[key].js = obj[key].js;
                   }
-                  if (isArray(obj[key].requires)) {
+                  if (Rocket.is.array(obj[key].requires)) {
                      listModules[key].requires = obj[key].requires;
                   }
                }
             }
          }
       },
-      dependencies: function (name:string) {
+      dependencies: (name:string) => {
          // Catch
-         if (typeof name !== 'string') {
-            return false;
-         }
+         if (!Rocket.is.string(name)) { return false; }
+
          // Continue
          var dependencies = [];
 
          // Functions
-         function checkModule (name:string) {
+         function checkModule(name:string) {
             if (moduleMethods.exists(name)) {
                dependencies.push(name);
                let thisModule = listModules[name];
-               if (isArrayCheck(thisModule.requires)) {
+
+               if (Rocket.is.array(thisModule.requires)) {
                   for (let moduleName of thisModule.requires) {
                      if (dependencies.indexOf(moduleName) > -1) {
                         if (Rocket.defaults.require.errors) {
@@ -95,6 +79,7 @@ module RockMod_Module {
                            return false;
                         }
                      }
+
                      checkModule(moduleName);
                   }
                }
@@ -105,85 +90,83 @@ module RockMod_Module {
          checkModule(name);
          return dependencies;
       },
-      exists: function (name:string) {
+      exists: (name:string) => {
          // Catch
-         if (typeof name !== 'string') {
-            return false;
-         }
+         if (!Rocket.is.string(name)) { return false; }
+
          // Continue
-         return (typeof listModules[name] === 'undefined') ? false : true;
+         return Rocket.exists(listModules[name]);
       },
-      get: function (name:string) {
-         if (typeof name !== 'string') {
-            return false;
-         }
+      get: (name:string) => {
+         // Catch
+         if (!Rocket.is.string(name)) { return false; }
+
+         // Continue
          return listModules[name];
       },
-      isLoaded: function (name:string) {
+      isLoaded: (name:string) => {
          // Catch
-         if (typeof name !== 'string') {
-            return false;
-         }
+         if (!Rocket.is.string(name)) { return false; }
+
          // Continue
          const thisModule = listModules[name];
-         return (typeof thisModule === 'object') ? thisModule.loaded : false;
+         return (Rocket.is.object(thisModule)) ? thisModule.loaded : false;
       },
-      listLoaded: function () {
+      listLoaded: () => {
          let listLoaded:any = [];
+
          for (let key in listModules) {
             if (listModules.hasOwnProperty(key) && listModules[key].loaded) {
                listLoaded.push(key);
             }
          }
+
          return listLoaded;
       },
-      remove: function (name:string) {
+      remove: (name:string) => {
          // Catch
-         if (typeof name !== 'string' || listModules[name] === 'undefined') {
-            return false;
-         }
+         if (!Rocket.is.string(name) || !Rocket.exists(listModules[name])) { return false; }
+
          // Continue
          delete listModules[name];
       }
    };
    let validate = {
-      module: function (name:string, obj:module) {
+      module: (name:string, obj:module) => {
          let hasCSS = false;
          let hasJS = false;
          let hasRequires = false;
-         if (typeof name !== 'string') {
+
+         if (!Rocket.is.string(name)) {
             return false;
          }
-         if (typeof obj !== 'object') {
+         if (!Rocket.is.object(obj)) {
             return false;
          }
-         if (typeof obj.css === 'undefined' && typeof obj.js === 'undefined') {
+         if (!Rocket.exists(obj.css) && !Rocket.exists(obj.js)) {
             return false;
          }
-         if ((typeof obj.css === 'string' || isArrayCheck(obj.css)) && obj.css.length > 0) {
+         if ((Rocket.is.string(obj.css) || Rocket.is.array(obj.css) && obj.css.length > 0)) {
             hasCSS = true;
          }
-         if ((typeof obj.js === 'string' || isArrayCheck(obj.js)) && obj.js.length > 0) {
+         if ((Rocket.is.string(obj.js) || Rocket.is.array(obj.js) && obj.js.length > 0)) {
             hasJS = true;
          }
-         if (isArrayCheck(obj.requires) && obj.requires.length > 0) {
+         if (Rocket.is.array(obj.requires) && obj.requires.length > 0) {
             hasRequires = true;
          }
          if (!hasCSS && !hasJS && !hasRequires) {
             return false;
          }
+
          return true;
       }
    };
-   function isArrayCheck (check:any) {
-      return (typeof check === 'object' && check instanceof Array) ? true : false;
-   }
 
    // Exports
    export let add = moduleMethods.add;
    export let exists = moduleMethods.exists;
    export let get = moduleMethods.get;
-   export let isArray = isArrayCheck;
    export let isLoaded = moduleMethods.isLoaded;
    export let dependencies = moduleMethods.dependencies;
    export let list = listModules;
@@ -195,11 +178,11 @@ module RockMod_Module {
 module RockMod_Require {
    // Functions
    function loadFile (file, thisCallback, customRootUrl:any) {
-      let callback = (typeof thisCallback === 'function') ? thisCallback : function () {};
+      let callback = (Rocket.is.function(thisCallback)) ? thisCallback : function () {};
       let theInclude:any;
       let type;
-      let rootUrl = (typeof customRootUrl === 'string') ? customRootUrl : Rocket.defaults.require.rootUrl;
-      let filePath = (isURL(file)) ? file : rootUrl + file;
+      let rootUrl = (Rocket.is.string(customRootUrl)) ? customRootUrl : Rocket.defaults.require.rootUrl;
+      let filePath = (Rocket.is.url(file)) ? file : rootUrl + file;
 
       // Create include element
       if (/(.css)$/.test(file)) {
@@ -207,8 +190,7 @@ module RockMod_Require {
          theInclude = document.createElement('link');
          theInclude.rel = 'stylesheet';
          theInclude.href = filePath;
-      }
-      else if (/(.js)$/.test(file)) {
+      } else if (/(.js)$/.test(file)) {
          type = 'js';
          theInclude = document.createElement('script');
          theInclude.setAttribute('async', true);
@@ -216,22 +198,24 @@ module RockMod_Require {
       }
 
       // Listen for completion
-      theInclude.onload = function () {
+      theInclude.onload = () => {
          if (type !== 'js' && Object.hasOwnProperty.call(window, "ActiveXObject") && !window['ActiveXObject']) {
             return callback(false);
          }
+
          return callback(true);
       };
-      theInclude.onreadystatechange = function() {
+      theInclude.onreadystatechange = function () {
          if (!this.readyState || this.readyState === 'loaded' || this.readyState === 'complete') {
             this.onreadystatechange = null;
             if (type === 'js') {
                return callback(false);
             }
+
             return callback(true);
          }
       };
-      theInclude.onerror = function() {
+      theInclude.onerror = () => {
          return callback(false);
       };
 
@@ -243,17 +227,16 @@ module RockMod_Require {
       let files = [];
 
       // CSS
-      if (typeof thisModule.css === 'string') {
+      if (Rocket.is.string(thisModule.css)) {
          files.push(thisModule.css);
-      }
-      else if (Rocket.module.isArray(thisModule.css) && thisModule.css.length > 0) {
+      } else if (Rocket.is.array(thisModule.css) && thisModule.css.length > 0) {
          files = files.concat(thisModule.css);
       }
+
       // JS
-      if (typeof thisModule.js === 'string') {
+      if (Rocket.is.string(thisModule.js)) {
          files.push(thisModule.js);
-      }
-      else if (Rocket.module.isArray(thisModule.js) && thisModule.js.length > 0) {
+      } else if (Rocket.is.array(thisModule.js) && thisModule.js.length > 0) {
          files = files.concat(thisModule.js);
       }
 
@@ -265,6 +248,7 @@ module RockMod_Require {
       if (count < 1) {
          return callback(false);
       }
+
       // Continue
       for (let file of files) {
          loadFile(file, function (response) {
@@ -275,9 +259,6 @@ module RockMod_Require {
          }, false);
       }
    }
-   function isURL (check:string) {
-      return /^(https?:\/\/[^\s]+)/.test(check);
-   }
 
    // Require instance
    /*
@@ -286,23 +267,24 @@ module RockMod_Require {
    class Require {
       modules:string[];
       modulesCount:number;
+
       constructor () {
          this.modules = [];
-         this.modulesCount = 0;
       }
 
       // Functions
       public add (name:string) {
          // Check
-         if (typeof name !== 'string' || !Rocket.module.exists(name) || this.modules.indexOf(name) > -1) {
+         if (!Rocket.is.string(name)
+         || !Rocket.module.exists(name)
+         || Rocket.module.isLoaded(name)
+         || this.modules.indexOf(name) > -1) {
             return false;
          }
+
          // Continue
          this.modules = this.modules.concat(Rocket.module.dependencies(name));
-         this.modules = this.modules.filter(function (value, index, self) {
-            return self.indexOf(value) === index;
-         });
-         this.modulesCount = this.modules.length;
+         this.modules = Rocket.array.unique(this.modules);
       }
 
       /*
@@ -311,77 +293,81 @@ module RockMod_Require {
       */
       public load (callback:any) {
          // Variables
-         let listModules = this.modules;
+         let listModules = this.modules.reverse();
          let modulesCount = this.modulesCount;
 
          // Functions
-         function loadModules (names:string[], callback:any) {
-            var namesCount = names.length;
+         function loadExecute() {
+            loadModules(listModules, () => {
+               return callback();
+            });
+         }
 
-            // Functions
-            function loadModulesDone () {
-               modulesCount--;
-               namesCount--;
-               if (namesCount === 0) {
-                  callback();
-               }
+         function loadModules(modules: string[], callback: any) {
+            let count = modules.length;
+
+            for (let thisModule of modules) {
+               loadModule(thisModule, () => {
+                  count--;
+                  if (count === 0) {
+                     return callback();
+                  }
+               });
             }
+         }
 
-            // Execute
-            for (let name of names) {
+         function loadModule(name, callback) {
+            /*
+            Check to see if the module exists. Rocket require is explicit and will
+            hard fail should a module not be found. This is to protect against lazy
+            module management.
+            */
+            if (!Rocket.module.exists(name)) {
+               if (Rocket.defaults.require.errors) {
+                  throw new Error('ROCKET REQUIRE: You are missing a required module: ' + name);
+               }
+            } else {
                /*
-               Check to see if the module exists. Rocket require is explicit and will
-               hard fail should a module not be found. This is to protect against lazy
-               module management.
+               Here we find that the module is already loaded.
+               Return the callback and move on.
                */
-               if (!Rocket.module.exists(name)) {
-                  if (Rocket.defaults.require.errors) {
-                     throw new Error('ROCKET REQUIRE: You are missing a required module: ' + name);
-                  }
+               if (Rocket.module.isLoaded(name)) {
+                  return callback();
                }
+               /*
+               If the module has not yet been loaded, do the neccessary checks and
+               resolve all the dependecies.
+               */
                else {
-                  /*
-                  Here we find that the module is already loaded.
-                  Return the callback and move on.
-                  */
-                  if (Rocket.module.isLoaded(name)) {
-                     loadModulesDone();
-                  }
-                  /*
-                  If the module has not yet been loaded, do the neccessary checks and
-                  resolve all the dependecies.
-                  */
-                  else {
-                     let thisModule = Rocket.module.get(name);
-                     let dependencies = (Rocket.module.isArray(thisModule.requires) && thisModule.requires.length > 0) ? thisModule.requires : false;
+                  let thisModule = Rocket.module.get(name);
+                  let dependencies = (Rocket.is.array(thisModule.requires) && thisModule.requires.length > 0) ? thisModule.requires : false;
 
-                     thisModule.loaded = true;
-                     // Check dependency
-                     if (!dependencies) {
-                        loadModuleFiles(name, thisModule, function () {
-                           loadModulesDone();
+                  // Change state to loaded
+                  // removeModule(name);
+                  thisModule.loaded = true;
+
+                  // Check dependency
+                  if (!dependencies) {
+                     loadModuleFiles(name, thisModule, () => {
+                        return callback();
+                     });
+                  } else {
+                     loadModules(dependencies, () => {
+                        loadModuleFiles(name, thisModule, () => {
+                           return callback();
                         });
-                     }
-                     else {
-                        loadModules(dependencies, function () {
-                           loadModuleFiles(name, thisModule, function () {
-                              loadModulesDone();
-                           });
-                        });
-                     }
+                     });
                   }
                }
             }
+         }
+
+         function removeModule(name) {
+            listModules.splice(listModules.indexOf(name), 1);
          }
 
          // Execute
-         for (let thisModule of this.modules) {
-            loadModules([thisModule], function () {
-               if (modulesCount === 0 && typeof callback === 'function') {
-                  return callback();
-               }
-            });
-         }
+         loadExecute();
       }
    }
 
