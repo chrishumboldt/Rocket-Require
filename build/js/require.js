@@ -1,13 +1,14 @@
 Rocket.defaults.require = {
     errors: true,
-    rootUrl: './node_modules/'
+    rootPath: './node_modules/'
 };
 function RockMod_RequireLoadMain() {
     var loadMainScript = document.querySelector('script[data-main]');
     if (loadMainScript) {
         var mainFile = loadMainScript.getAttribute('data-main');
         if (Rocket.is.string(mainFile) && mainFile.length > 0) {
-            RockMod_Require.load(mainFile, false, './');
+            var customPath = (mainFile.substring(0, 2) === '~/') ? Rocket.defaults.rootPath : './';
+            RockMod_Require.load(mainFile, false, customPath);
         }
     }
 }
@@ -107,7 +108,7 @@ var RockMod_Module;
                 paths = [paths];
             }
             for (var len = paths.length, i = 0; i < len; i++) {
-                paths[i] = paths[i].replace(/~\//g, Rocket.defaults.require.rootUrl);
+                paths[i] = paths[i].replace(/~\//g, Rocket.defaults.require.rootPath);
             }
             return paths;
         }
@@ -152,11 +153,11 @@ var RockMod_Module;
 })(RockMod_Module || (RockMod_Module = {}));
 var RockMod_Require;
 (function (RockMod_Require) {
-    function loadFile(file, thisCallback, customRootUrl) {
+    function loadFile(file, thisCallback, customRootPath) {
         var callback = (Rocket.is.function(thisCallback)) ? thisCallback : function () { };
         var theInclude;
         var type;
-        var rootUrl = (Rocket.is.string(customRootUrl)) ? customRootUrl : Rocket.defaults.require.rootUrl;
+        var rootUrl = (Rocket.is.string(customRootPath)) ? customRootPath : '';
         var filePath = (Rocket.is.url(file)) ? file : rootUrl + file;
         if (/(.css)$/.test(file)) {
             type = 'css';
@@ -234,11 +235,15 @@ var RockMod_Require;
             this.modules = Rocket.array.unique(this.modules);
         };
         Require.prototype.load = function (callback) {
-            var listModules = this.modules.reverse();
-            var modulesCount = this.modulesCount;
+            var self = this;
+            var listModules = self.modules.reverse();
+            var modulesCount = self.modulesCount;
             function loadExecute() {
                 loadModules(listModules, function () {
-                    return callback();
+                    self.modules = [];
+                    if (Rocket.is.function(callback)) {
+                        return callback();
+                    }
                 });
             }
             function loadModules(modules, callback) {
