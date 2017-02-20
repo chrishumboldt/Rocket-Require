@@ -42,7 +42,10 @@ npm install rocket-require
          <p>Once all files are present on the DOM a function is called displaying a message.</p>
 <pre class="prettyprint linenums">
 &lt;script&gt;
-// Add the module declaration
+// Initilise a require instance
+var require = Rocket.require();
+
+// Declare the modules
 Rocket.module.add({
    rocketButton: {
       requires: ['rocketTools'],
@@ -54,17 +57,26 @@ Rocket.module.add({
    }
 });
 
-// Initilise the require
-var require = Rocket.require();
+// Require
 require.add('rocketButton');
 
-// Load
 require.load(function () {
-   $('#success-text').text('Rocket Buttons and Rocket Tools have just been loaded with Rocket Require!');
+   console.log('Rocket Buttons and Rocket Tools have just been loaded with Rocket Require!');
 });
 &lt;/script&gt;
 </pre>
-         <p>You will notice the <b>~/</b> before all the paths. This applies the defaults root path to the path which by default is set to <b>./node_modules</b>.</p>
+         <p>You will notice the <b>~/</b> before all the paths. This inserts the defaults root path to all module files which by default is set to <b>./node_modules/</b>. Thus the resulting path for all files becomes:</p>
+<pre class="prettyprint linenums">
+rocketButton: {
+   requires: ['rocketTools'],
+   css: ['./node_modules/rocket-button/css/button.min.css']
+   js: ['./node_modules/rocket-button/js/button.min.js']
+},
+rocketTools: {
+   js: ['./node_modules/rocket-tools/js/tools.min.js']
+}
+</pre>
+         <p class="note">This is just a useful shorthand feature.</p>
          <br>
          <h4>Working Example</h4>
          <div id="success-text">Rocket require is currently loading jQuery...</div>

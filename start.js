@@ -2,7 +2,10 @@
 Author: Chris Humboldt
 */
 
-// Decalre the module
+// Initilise a require instance
+var require = Rocket.require();
+
+// Declare the modules
 Rocket.module.add({
    jquery: {
       js: ['https://code.jquery.com/jquery-3.1.1.js']
@@ -10,7 +13,6 @@ Rocket.module.add({
 });
 
 // Require
-var require = Rocket.require();
 require.add('jquery');
 
 require.load(function () {
