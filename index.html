@@ -2,10 +2,10 @@
 <html class="_propel">
 <head>
 
-	<meta charset="utf-8">
-	<meta http-equiv="x-ua-compatible" content="ie=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-	<title>Rocket Require</title>
+   <meta charset="utf-8">
+   <meta http-equiv="x-ua-compatible" content="ie=edge">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+   <title>Rocket Require</title>
 
    <link href="node_modules/rocket-demo/css/demo.min.css" rel="stylesheet" type="text/css">
 
@@ -13,31 +13,31 @@
 <body>
 
    <div id="rocket-demo-message">
-		You need to run "npm install" and include the neccessary demo files in order to view this file.
-	</div>
+      You need to run "npm install" and include the neccessary demo files in order to view this file.
+   </div>
 
    <div id="rocket-demo" style="display:none;">
-		<div class="heading"><div class="container">
-			<h2>Rocket Require Module</h2>
-		</div></div>
+      <div class="heading"><div class="container">
+         <h2>Rocket Require Module</h2>
+      </div></div>
 
-		<div class="container">
-			<h4>Getting Started</h4>
-			<p>Install via NPM.</p>
+      <div class="container">
+         <h4>Getting Started</h4>
+         <p>Install via NPM.</p>
 <pre class="prettyprint linenums">
 npm install rocket-require
 </pre>
          <p class="note">Note that this module has a dependency <a href="https://github.com/chrishumboldt/Rocket-Tools" class="link" target="_blank">Rocket Tools (21kb)</a> which will automatically be installed as well.</p>
-			<p>Start by including the necessary files.</p>
+         <p>Start by including the necessary files.</p>
 <pre class="prettyprint linenums">
 &lt;body&gt;
-    /* Your content goes here */
-    &lt;script src=&quot;node_modules/rocket-tools/js/tools.min.js&quot;>&lt;/script&gt;
-    &lt;script src=&quot;node_modules/rocket-require/js/require.min.js&quot;>&lt;/script&gt;
+   /* Your content goes here */
+   &lt;script src=&quot;node_modules/rocket-tools/js/tools.min.js&quot;>&lt;/script&gt;
+   &lt;script src=&quot;node_modules/rocket-require/js/require.min.js&quot;>&lt;/script&gt;
 &lt;/body&gt;
 </pre>
-			<br>
-			<h4>Full Example</h4>
+         <br>
+         <h4>Full Example</h4>
          <p>In the example below we are attempting to load a local <a href="https://github.com/chrishumboldt/Rocket-Button" class="link" target="_blank">Rocket Button</a> module. We can see that is a dependency on <a href="https://github.com/chrishumboldt/Rocket-Tools" class="link" target="_blank">Rocket Tools</a>, which has also been declared. As a result Rocket Tools will be loaded first.</p>
          <p>Once all files are present on the DOM a function is called displaying a message.</p>
 <pre class="prettyprint linenums">
@@ -76,14 +76,14 @@ require.load(function () {
       </div>
 
       <footer><div class="container"><div class="col-double">
-			<div class="left">
-				Made by <a href="http://chrishumboldt.com" target="_blank">Chris Humboldt</a>
-			</div>
-			<!-- <div class="right">
-				A <a href="http://getwebplate.com" target="_blank">Webplate Project</a>&nbsp;&nbsp;
-				Want updates? <a href="http://twitter.com/webplatetweets" target="_blank">@webplatetweets</a>
-			</div> -->
-		</div></div></footer>
+         <div class="left">
+            Made by <a href="http://chrishumboldt.com" target="_blank">Chris Humboldt</a>
+         </div>
+         <!-- <div class="right">
+            A <a href="http://getwebplate.com" target="_blank">Webplate Project</a>&nbsp;&nbsp;
+            Want updates? <a href="http://twitter.com/webplatetweets" target="_blank">@webplatetweets</a>
+         </div> -->
+      </div></div></footer>
 
    </div>
 
