@@ -154,6 +154,7 @@ var RockMod_Module;
     RockMod_Module.exists = moduleMethods.exists;
     RockMod_Module.get = moduleMethods.get;
     RockMod_Module.isLoaded = moduleMethods.isLoaded;
+    RockMod_Module.isLoading = moduleMethods.isLoading;
     RockMod_Module.dependencies = moduleMethods.dependencies;
     RockMod_Module.list = listModules;
     RockMod_Module.loaded = moduleMethods.listLoaded;
@@ -252,27 +253,13 @@ var RockMod_Require;
         };
         Require.prototype.load = function (callback) {
             var self = this;
-            var listModules = self.modules;
-            var modulesCount = self.modulesCount;
             function loadExecute() {
-                loadModules(listModules, function () {
+                loadModules(self.modules, function () {
                     self.modules = [];
                     if (Rocket.is.function(callback)) {
                         return callback();
                     }
                 });
-            }
-            function loadModules(modules, callback) {
-                var count = modules.length;
-                for (var _i = 0, modules_1 = modules; _i < modules_1.length; _i++) {
-                    var thisModule = modules_1[_i];
-                    loadModule(thisModule, function () {
-                        count--;
-                        if (count === 0) {
-                            return callback();
-                        }
-                    });
-                }
             }
             function loadModule(name, callback) {
                 if (!Rocket.module.exists(name)) {
@@ -309,8 +296,17 @@ var RockMod_Require;
                     }
                 }
             }
-            function removeModule(name) {
-                listModules.splice(listModules.indexOf(name), 1);
+            function loadModules(modules, callback) {
+                var count = modules.length;
+                for (var _i = 0, modules_1 = modules; _i < modules_1.length; _i++) {
+                    var thisModule = modules_1[_i];
+                    loadModule(thisModule, function () {
+                        count--;
+                        if (count === 0) {
+                            return callback();
+                        }
+                    });
+                }
             }
             loadExecute();
         };

@@ -192,6 +192,7 @@ module RockMod_Module {
    export let exists = moduleMethods.exists;
    export let get = moduleMethods.get;
    export let isLoaded = moduleMethods.isLoaded;
+   export let isLoading = moduleMethods.isLoading;
    export let dependencies = moduleMethods.dependencies;
    export let list = listModules;
    export let loaded = moduleMethods.listLoaded;
@@ -292,7 +293,6 @@ module RockMod_Require {
    */
    class Require {
       modules: string[];
-      modulesCount: number;
 
       constructor () {
          this.modules = [];
@@ -320,30 +320,15 @@ module RockMod_Require {
       public load(callback: any) {
          // Variables
          const self = this;
-         let listModules = self.modules;
-         let modulesCount = self.modulesCount;
 
          // Functions
          function loadExecute() {
-            loadModules(listModules, () => {
+            loadModules(self.modules, () => {
                self.modules = [];
                if (Rocket.is.function(callback)) {
                   return callback();
                }
             });
-         }
-
-         function loadModules(modules: string[], callback: any) {
-            let count = modules.length;
-
-            for (let thisModule of modules) {
-               loadModule(thisModule, () => {
-                  count--;
-                  if (count === 0) {
-                     return callback();
-                  }
-               });
-            }
          }
 
          function loadModule(name, callback) {
@@ -398,8 +383,17 @@ module RockMod_Require {
             }
          }
 
-         function removeModule(name) {
-            listModules.splice(listModules.indexOf(name), 1);
+         function loadModules(modules: string[], callback: any) {
+            let count = modules.length;
+
+            for (let thisModule of modules) {
+               loadModule(thisModule, () => {
+                  count--;
+                  if (count === 0) {
+                     return callback();
+                  }
+               });
+            }
          }
 
          // Execute
