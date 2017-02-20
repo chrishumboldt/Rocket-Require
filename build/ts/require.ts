@@ -42,7 +42,8 @@ module RockMod_Module {
             if (obj.hasOwnProperty(key)) {
                if (validate.module(key, obj[key])) {
                   listModules[key] = {
-                     loaded: false
+                     loaded: false,
+                     loading: false
                   };
                   if (Rocket.is.string(obj[key].css) || Rocket.is.array(obj[key].css)) {
                      listModules[key].css = moduleMethods.sanitisePaths(obj[key].css);
@@ -112,6 +113,14 @@ module RockMod_Module {
          // Continue
          const thisModule = listModules[name];
          return (Rocket.is.object(thisModule)) ? thisModule.loaded : false;
+      },
+      isLoading: (name: string) => {
+         // Catch
+         if (!Rocket.is.string(name)) { return false; }
+
+         // Continue
+         const thisModule = listModules[name];
+         return (Rocket.is.object(thisModule)) ? thisModule.loading : false;
       },
       listLoaded: () => {
          let listLoaded: any = [];
@@ -310,7 +319,7 @@ module RockMod_Require {
       public load(callback: any) {
          // Variables
          const self = this;
-         let listModules = self.modules.reverse();
+         let listModules = self.modules;
          let modulesCount = self.modulesCount;
 
          // Functions
@@ -347,27 +356,40 @@ module RockMod_Require {
                   throw new Error('ROCKET REQUIRE: You are missing a required module: ' + name);
                }
             } else {
+               let thisModule = Rocket.module.get(name);
+
                /*
-               Here we find that the module is already loaded.
-               Return the callback and move on.
+               Here we find that the module is already loaded or loading.
+               Return the callback and move on as needed.
                */
-               if (Rocket.module.isLoaded(name)) {
-                  return callback();
+               if (thisModule.loaded || thisModule.loading) {
+                  if (thisModule.loaded) {
+                     return callback();
+                  } else {
+                     // Poll the variable once loaded
+                     let modIntervalCheck = setInterval(() => {
+                        if (thisModule.loaded) {
+                           clearInterval(modIntervalCheck);
+                           return callback();
+                        }
+                     }, 10);
+                  }
                }
                /*
                If the module has not yet been loaded, do the neccessary checks and
                resolve all the dependecies.
                */
                else {
-                  let thisModule = Rocket.module.get(name);
                   let dependencies = (Rocket.is.array(thisModule.requires) && thisModule.requires.length > 0) ? thisModule.requires : false;
 
-                  // Change state to loaded
-                  thisModule.loaded = true;
+                  // Change state to loading
+                  thisModule.loading = true;
 
                   // Check dependency
                   if (!dependencies) {
                      loadModuleFiles(name, thisModule, () => {
+                        // Module loaded
+                        thisModule.loaded = true;
                         return callback();
                      });
                   } else {

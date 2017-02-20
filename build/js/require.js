@@ -25,7 +25,8 @@ var RockMod_Module;
                 if (obj.hasOwnProperty(key)) {
                     if (validate.module(key, obj[key])) {
                         listModules[key] = {
-                            loaded: false
+                            loaded: false,
+                            loading: false
                         };
                         if (Rocket.is.string(obj[key].css) || Rocket.is.array(obj[key].css)) {
                             listModules[key].css = moduleMethods.sanitisePaths(obj[key].css);
@@ -87,6 +88,13 @@ var RockMod_Module;
             }
             var thisModule = listModules[name];
             return (Rocket.is.object(thisModule)) ? thisModule.loaded : false;
+        },
+        isLoading: function (name) {
+            if (!Rocket.is.string(name)) {
+                return false;
+            }
+            var thisModule = listModules[name];
+            return (Rocket.is.object(thisModule)) ? thisModule.loading : false;
         },
         listLoaded: function () {
             var listLoaded = [];
@@ -243,7 +251,7 @@ var RockMod_Require;
         };
         Require.prototype.load = function (callback) {
             var self = this;
-            var listModules = self.modules.reverse();
+            var listModules = self.modules;
             var modulesCount = self.modulesCount;
             function loadExecute() {
                 loadModules(listModules, function () {
@@ -272,15 +280,26 @@ var RockMod_Require;
                     }
                 }
                 else {
-                    if (Rocket.module.isLoaded(name)) {
-                        return callback();
+                    var thisModule_1 = Rocket.module.get(name);
+                    if (thisModule_1.loaded || thisModule_1.loading) {
+                        if (thisModule_1.loaded) {
+                            return callback();
+                        }
+                        else {
+                            var modIntervalCheck_1 = setInterval(function () {
+                                if (thisModule_1.loaded) {
+                                    clearInterval(modIntervalCheck_1);
+                                    return callback();
+                                }
+                            }, 10);
+                        }
                     }
                     else {
-                        var thisModule_1 = Rocket.module.get(name);
                         var dependencies = (Rocket.is.array(thisModule_1.requires) && thisModule_1.requires.length > 0) ? thisModule_1.requires : false;
-                        thisModule_1.loaded = true;
+                        thisModule_1.loading = true;
                         if (!dependencies) {
                             loadModuleFiles(name, thisModule_1, function () {
+                                thisModule_1.loaded = true;
                                 return callback();
                             });
                         }
