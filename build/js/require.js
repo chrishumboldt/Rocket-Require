@@ -206,7 +206,7 @@ var RockMod_Require;
         };
         document.getElementsByTagName('head')[0].appendChild(theInclude);
     }
-    function loadModuleFiles(name, thisModule, callback) {
+    function loadModuleFiles(thisModule, callback) {
         var count = 0;
         var files = [];
         if (Rocket.is.string(thisModule.css)) {
@@ -223,14 +223,15 @@ var RockMod_Require;
         }
         count = files.length;
         if (count < 1) {
-            return callback(false);
+            return callback();
         }
         for (var _i = 0, files_1 = files; _i < files_1.length; _i++) {
             var file = files_1[_i];
             loadFile(file, function (response) {
                 count--;
                 if (count === 0) {
-                    return callback(true);
+                    thisModule.loaded = true;
+                    return callback();
                 }
             }, false);
         }
@@ -298,16 +299,11 @@ var RockMod_Require;
                         var dependencies = (Rocket.is.array(thisModule_1.requires) && thisModule_1.requires.length > 0) ? thisModule_1.requires : false;
                         thisModule_1.loading = true;
                         if (!dependencies) {
-                            loadModuleFiles(name, thisModule_1, function () {
-                                thisModule_1.loaded = true;
-                                return callback();
-                            });
+                            return loadModuleFiles(thisModule_1, callback);
                         }
                         else {
                             loadModules(dependencies, function () {
-                                loadModuleFiles(name, thisModule_1, function () {
-                                    return callback();
-                                });
+                                return loadModuleFiles(thisModule_1, callback);
                             });
                         }
                     }

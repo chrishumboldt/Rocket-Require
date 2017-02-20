@@ -247,7 +247,7 @@ module RockMod_Require {
    }
 
    // Load module files
-   function loadModuleFiles(name, thisModule, callback) {
+   function loadModuleFiles(thisModule, callback) {
       let count = 0;
       let files = [];
 
@@ -271,7 +271,7 @@ module RockMod_Require {
       // Execute
       // Catch
       if (count < 1) {
-         return callback(false);
+         return callback();
       }
 
       // Continue
@@ -279,7 +279,8 @@ module RockMod_Require {
          loadFile(file, function (response) {
             count--;
             if (count === 0) {
-               return callback(true);
+               thisModule.loaded = true;
+               return callback();
             }
          }, false);
       }
@@ -298,7 +299,7 @@ module RockMod_Require {
       }
 
       // Functions
-      public add(name:string) {
+      public add(name: string) {
          // Check
          if (!Rocket.is.string(name)
          || !Rocket.module.exists(name)
@@ -387,16 +388,10 @@ module RockMod_Require {
 
                   // Check dependency
                   if (!dependencies) {
-                     loadModuleFiles(name, thisModule, () => {
-                        // Module loaded
-                        thisModule.loaded = true;
-                        return callback();
-                     });
+                     return loadModuleFiles(thisModule, callback);
                   } else {
                      loadModules(dependencies, () => {
-                        loadModuleFiles(name, thisModule, () => {
-                           return callback();
-                        });
+                        return loadModuleFiles(thisModule, callback);
                      });
                   }
                }
