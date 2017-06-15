@@ -93,7 +93,7 @@ require.module.add({
 });
 ```
 
-As you can see a simple string is used for the file paths. You can however use an array of string should there be more then one file of any type. For example.
+As you can see a simple string is used for the file paths. You can however use an array of strings should there be more then one file of any type. For example.
 
 ```javascript
 require.module.add({
