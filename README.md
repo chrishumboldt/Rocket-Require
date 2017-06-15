@@ -164,6 +164,7 @@ Once initialised, you can begin to load modules and the files as needed. To do s
 
 ```javascript
 require.add('testModule');
+require.add('anotherModule');
 ```
 
 Once done execute the load method to add the files to your page. This method also has a callback function that allows you to execute code once the loading is complete. For example:
