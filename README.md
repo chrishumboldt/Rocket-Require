@@ -153,7 +153,7 @@ console.log(Rocket.module.list);
 ```
 
 ## Initialisation
-To start first initialise a require instance.
+To start initialise a require instance.
 
 ```javascript
 var require = Rocket.require();
