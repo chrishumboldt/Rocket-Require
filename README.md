@@ -153,14 +153,14 @@ console.log(Rocket.module.list);
 ```
 
 ## Initialisation
-To start it is always best to first initialise an instance. You will then be able to manage your file loads as needed.
+To start first initialise a require instance.
 
 ```javascript
 var require = Rocket.require();
 ```
 
 #### Load
-Once you are happy with all your module declarations, you can begin to load these modules and the files as needed. To do so you first need to tell Rocket Require what modules you are looking to add to the page. For example:
+Once initialised, you can begin to load modules and the files as needed. To do so you first need to tell Rocket Require what modules you are looking to add to the page. For example:
 
 ```javascript
 require.add('testModule');
