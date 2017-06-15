@@ -29,7 +29,7 @@ Simply start by including the required Javascript file.
 ```
 
 ## Full Example
-In the example below we are attempting to load a local Rocket Button module. We can see that is a dependency on Rocket Tools, which has also been declared. As a result Rocket Tools will be loaded first.
+In the example below we are attempting to load a local Rocket Button module. We can see that there is a dependency on Rocket Tools, which has also been declared. As a result Rocket Tools will be loaded first.
 
 Once all files are present on the DOM a function is called displaying a message.
 
