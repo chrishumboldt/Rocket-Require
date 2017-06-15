@@ -4,7 +4,9 @@ A script and stylesheet loading module.
 * [Getting Started](#getting-started)
 * [Full Example](#full-example)
 * [Initialisation](#initialisation)
-   * [Options](#options)
+   * [Modules](#modules)
+   * [Dependencies](#dependencies)
+   * [Load](#load)
    * [Defaults](#defaults)
 
 ## Getting Started
@@ -78,3 +80,115 @@ Before you can use the require module you first need to initialise an instance. 
 ```javascript
 var require = Rocket.require();
 ```
+
+#### Modules
+Once you have access to an instance you are then able to define the different modules and the accompanying files. Declare the name of the module then assign an object referencing the files.
+
+```javascript
+require.module.add({
+   testModule: {
+      css: '~/test/css/file.min.css',
+      js: '~/test/js/file.min.js'
+   }
+});
+```
+
+As you can see a simple string is used for the file paths. You can however use an array of string should there be more then one file of any type. For example.
+
+```javascript
+require.module.add({
+   testModule: {
+      css: [
+         '~/test/css/file-one.min.css',
+         '~/test/css/file-two.min.css'
+      ]
+   }
+});
+```
+
+You can declare multiple modules at a time by adding more properties to the add method. For example:
+
+```javascript
+require.module.add({
+   testModule: {
+      css: [
+         '~/test/css/file.min.css'
+      ]
+   },
+   anotherModule: {
+      css: [
+         '~/another/css/file.min.css'
+      ]
+   }
+});
+```
+
+While you do not have to declare all modules at the same time, it is recommended to keep it all in once place for easier management. You can however add more modules at anytime with the lifecycle of the app.
+
+You will notice the **~/** at the beginning of the file paths. This is explained further up in the [Full Example](#full-example) section and is managed via the **rootPath** property in the [Defaults](#defaults).
+
+Should you not use this character, paths will then become relative.
+
+#### Dependencies
+Most times modules have dependencies on other modules. To assign a dependency simply add a `requires` property to the module being declared. **Note** that the requires property is an array. For example:
+
+```javascript
+require.module.add({
+   testModule: {
+      requires: ['jQuery'],
+      css: '~/test/css/file.min.css'
+   }
+});
+```
+
+If the module you are referencing does not exist or has not been declared then it will simply be passed over and ignored.
+
+#### Load
+Once you are happy with all your module declarations, you can begin to load these modules and the files as needed. To do so you first need to tell Rocket Require what modules you are looking to add to the page. For example:
+
+```javascript
+require.add('testModule');
+```
+
+Once done execute the load method to add the files to your page. This method also has a callback function that allows you to execute code once the loading is complete. For example:
+
+```javascript
+require.load(function () {
+   console.log('The files have loaded.');
+});
+```
+
+Rocket require will manage all the dependencies and the loading there off for you, making sure that everything is in order. Should you have any errors or dependency loops, you will see an error message in the console.
+
+#### Defaults
+You can also overwrite the module properties globally by altering the Rocket defaults. To do so reference the defaults object property, for example:
+
+```javascript
+// This will hide all errors
+Rocket.defaults.require.errors = false;
+
+// This is the default root path for all modules.
+// By default it is set to './node_modules/'.
+Rocket.defaults.require.rootPath = './my-modules/';
+```
+
+## Author
+Created and maintained by Chris Humboldt<br>
+Website: <a href="http://chrishumboldt.com/">chrishumboldt.com</a><br>
+Twitter: <a href="https://twitter.com/chrishumboldt">twitter.com/chrishumboldt</a><br>
+GitHub <a href="https://github.com/chrishumboldt">github.com/chrishumboldt</a><br>
+
+## Copyright and License
+Copyright 2017 Rocket Project
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
