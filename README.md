@@ -3,9 +3,11 @@ A script and stylesheet loading module.
 
 * [Getting Started](#getting-started)
 * [Full Example](#full-example)
-* [Initialisation](#initialisation)
-   * [Modules](#modules)
+* [Modules](#modules)
    * [Dependencies](#dependencies)
+   * [Remove](#remove)
+   * [List](#list)
+* [Initialisation](#initialisation)
    * [Load](#load)
    * [Defaults](#defaults)
 
@@ -74,18 +76,11 @@ rocketTools: {
 
 This is just a useful shorthand feature.
 
-## Initialisation
-Before you can use the require module you first need to initialise an instance. You will then be able to manage your requirements as needed.
+## Modules
+All require modules are manage globally. To add define the different modules names and the accompanying files.
 
 ```javascript
-var require = Rocket.require();
-```
-
-#### Modules
-Once you have access to an instance you are then able to define the different modules and the accompanying files. Declare the name of the module then assign an object referencing the files.
-
-```javascript
-require.module.add({
+Rocket.module.add({
    testModule: {
       css: '~/test/css/file.min.css',
       js: '~/test/js/file.min.js'
@@ -96,7 +91,7 @@ require.module.add({
 As you can see a simple string is used for the file paths. You can however use an array of strings should there be more then one file of any type. For example.
 
 ```javascript
-require.module.add({
+Rocket.module.add({
    testModule: {
       css: [
          '~/test/css/file-one.min.css',
@@ -109,7 +104,7 @@ require.module.add({
 You can declare multiple modules at a time by adding more properties to the add method. For example:
 
 ```javascript
-require.module.add({
+Rocket.module.add({
    testModule: {
       css: [
          '~/test/css/file.min.css'
@@ -133,7 +128,7 @@ Should you not use this character, paths will then become relative.
 Most times modules have dependencies on other modules. To assign a dependency simply add a `requires` property to the module being declared. **Note** that the requires property is an array. For example:
 
 ```javascript
-require.module.add({
+Rocket.module.add({
    testModule: {
       requires: ['jQuery'],
       css: '~/test/css/file.min.css'
@@ -142,6 +137,27 @@ require.module.add({
 ```
 
 If the module you are referencing does not exist or has not been declared then it will simply be passed over and ignored.
+
+#### Remove
+If for whatever reason you decide you want to remove a module do so using the remove method.
+
+```javascript
+Rocket.module.remove('testModule');
+```
+
+#### List
+You are also able to see a list of all modules by referencing the list object. For example:
+
+```javascript
+console.log(Rocket.module.list);
+```
+
+## Initialisation
+To start it is always best to first initialise an instance. You will then be able to manage your file loads as needed.
+
+```javascript
+var require = Rocket.require();
+```
 
 #### Load
 Once you are happy with all your module declarations, you can begin to load these modules and the files as needed. To do so you first need to tell Rocket Require what modules you are looking to add to the page. For example:
