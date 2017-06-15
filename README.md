@@ -118,7 +118,7 @@ Rocket.module.add({
 });
 ```
 
-While you do not have to declare all modules at the same time, it is recommended to keep it all in once place for easier management. You can however add more modules at anytime with the lifecycle of the app.
+While you do not have to declare all modules at the same time, it is recommended to keep it all in once place for easier management. You can however add more modules at anytime within the lifecycle of the app.
 
 You will notice the **~/** at the beginning of the file paths. This is explained further up in the [Full Example](#full-example) section and is managed via the **rootPath** property in the [Defaults](#defaults).
 
