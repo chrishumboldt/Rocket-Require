@@ -178,7 +178,7 @@ require.load(function () {
 Rocket require will manage all the dependencies and the loading there off for you, making sure that everything is in order. Should you have any errors or dependency loops, you will see an error message in the console.
 
 #### Defaults
-You can also overwrite the module properties globally by altering the Rocket defaults. To do so reference the defaults object property, for example:
+You can also overwrite the properties globally by altering the Rocket defaults. To do so reference the defaults object property, for example:
 
 ```javascript
 // This will hide all errors
