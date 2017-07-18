@@ -347,7 +347,6 @@ module RockMod_Require {
       for (let file of files) {
          loadFile(file, function (resp) {
             count--;
-            Rocket.log(file + ' Done!');
             if (count === 0) {
                thisModule.loaded = true;
                return callback();
@@ -445,7 +444,6 @@ module RockMod_Require {
                      return loadModuleFiles(thisModule, callback);
                   } else {
                      loadModules(dependencies, () => {
-                        Rocket.log('done');
                         return loadModuleFiles(thisModule, callback);
                      });
                   }

@@ -328,20 +328,16 @@ var RockMod_Require;
         if (count < 1) {
             return callback();
         }
-        var _loop_1 = function (file) {
+        // Continue
+        for (var _i = 0, files_1 = files; _i < files_1.length; _i++) {
+            var file = files_1[_i];
             loadFile(file, function (resp) {
                 count--;
-                Rocket.log(file + ' Done!');
                 if (count === 0) {
                     thisModule.loaded = true;
                     return callback();
                 }
             }, false);
-        };
-        // Continue
-        for (var _i = 0, files_1 = files; _i < files_1.length; _i++) {
-            var file = files_1[_i];
-            _loop_1(file);
         }
     }
     // Require instance
@@ -422,7 +418,6 @@ var RockMod_Require;
                         }
                         else {
                             loadModules(dependencies, function () {
-                                Rocket.log('done');
                                 return loadModuleFiles(thisModule_1, callback);
                             });
                         }
