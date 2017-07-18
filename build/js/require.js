@@ -162,7 +162,7 @@ var RockMod_Module;
             if (!Rocket.is.object(obj)) {
                 return false;
             }
-            if (!Rocket.exists(obj.css) && !Rocket.exists(obj.js)) {
+            if (!Rocket.exists(obj.css) && !Rocket.exists(obj.js) && !Rocket.exists(obj.requires)) {
                 return false;
             }
             if ((Rocket.is.string(obj.css) || Rocket.is.array(obj.css) && obj.css.length > 0)) {
@@ -229,34 +229,39 @@ var RockMod_Require;
                     });
                 }
                 else {
-                    /*
-                    Date: 18 July 2017
-                    This was a problem I had begun to solve but the below authors solved it already. I used
-                    a lot of their code and so they must be thanked.
-     
-                    This is very much courtesy of authors:
-                    Scott Jehl
-                    mmcev106
-     
-                    Reference URL: https://github.com/filamentgroup/loadCSS/blob/master/src/loadCSS.js
-                    */
-                    var stylesheets = document.styleSheets;
                     theInclude = document.createElement('link');
                     theInclude.rel = 'stylesheet';
                     theInclude.href = filePath;
-                    theInclude.media = 'YodasHat';
                     // Functions
                     function loadCallback() {
                         Rocket.event.remove(theInclude, 'load', loadCallback);
-                        theInclude.media = 'all';
                         if (Rocket.is.function(callback)) {
                             setTimeout(function () {
                                 return callback(true);
                             });
                         }
                     }
+                    function loadError() {
+                        theInclude.onerror = function () {
+                            if (Rocket.is.function(callback)) {
+                                return callback(false);
+                            }
+                        };
+                    }
+                    function loadIE() {
+                        theInclude.onreadystatechange = function () {
+                            if (!this.readyState || this.readyState === 'loaded' || this.readyState === 'complete') {
+                                this.onreadystatechange = null;
+                                if (Rocket.is.function(callback)) {
+                                    return callback(true);
+                                }
+                            }
+                        };
+                    }
                     // Execute
                     Rocket.event.add(theInclude, 'load', loadCallback);
+                    loadIE();
+                    loadError();
                     onReady(function () {
                         Rocket.dom.head.appendChild(theInclude);
                     });
@@ -323,16 +328,20 @@ var RockMod_Require;
         if (count < 1) {
             return callback();
         }
-        // Continue
-        for (var _i = 0, files_1 = files; _i < files_1.length; _i++) {
-            var file = files_1[_i];
+        var _loop_1 = function (file) {
             loadFile(file, function (resp) {
                 count--;
+                Rocket.log(file + ' Done!');
                 if (count === 0) {
                     thisModule.loaded = true;
                     return callback();
                 }
             }, false);
+        };
+        // Continue
+        for (var _i = 0, files_1 = files; _i < files_1.length; _i++) {
+            var file = files_1[_i];
+            _loop_1(file);
         }
     }
     // Require instance
@@ -413,6 +422,7 @@ var RockMod_Require;
                         }
                         else {
                             loadModules(dependencies, function () {
+                                Rocket.log('done');
                                 return loadModuleFiles(thisModule_1, callback);
                             });
                         }
@@ -428,7 +438,7 @@ var RockMod_Require;
                         if (count === 0) {
                             setTimeout(function () {
                                 return callback();
-                            });
+                            }, 10);
                         }
                     });
                 }

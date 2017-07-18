@@ -1,5 +1,6 @@
 # Folders to ignore
 node_modules
+test
 
 # Files to ignore
 test.js
