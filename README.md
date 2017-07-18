@@ -10,6 +10,8 @@ A script and stylesheet loading module.
 * [Initialisation](#initialisation)
    * [Load](#load)
    * [Defaults](#defaults)
+* [Note on CSS Loading](#note-on-css-loading)
+* [Roadmap](#roadmap)
 
 ## Getting Started
 Install via NPM.
@@ -188,6 +190,15 @@ Rocket.defaults.require.errors = false;
 // By default it is set to './node_modules/'.
 Rocket.defaults.require.rootPath = './my-modules/';
 ```
+
+## Note on CSS Loading
+I believe this module is one of the few if not only module that executes callbacks correctly on required CSS files, meaning you can manage the display of the DOM based on the completion on the CSS file callbacks. This prevents style snapping.
+
+While the solution is working in all tests please note that there might be edge cases and report those edge cases as they are found.
+
+## Roadmap
+   * Next on the agenda is to implement a correct module reference in the CommonJS Module specification pattern.
+   * Create logical references to loaded modules.
 
 ## Author
 Created and maintained by Chris Humboldt<br>
