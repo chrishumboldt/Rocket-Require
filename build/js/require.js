@@ -194,53 +194,109 @@ var RockMod_Module;
 // Rocket require
 var RockMod_Require;
 (function (RockMod_Require) {
+    var isFirefox = navigator.userAgent.indexOf('Firefox') > -1;
     // Functions
     function loadFile(file, callback, customRootPath) {
         var theInclude;
         var type;
         var rootUrl = (Rocket.is.string(customRootPath)) ? customRootPath : '';
         var filePath = (Rocket.is.url(file)) ? file : rootUrl + file;
+        var ext = Rocket.get.extension(file);
         // Create include element
-        if (/(.css)$/.test(file)) {
-            type = 'css';
-            theInclude = document.createElement('link');
-            theInclude.rel = 'stylesheet';
-            theInclude.href = filePath;
+        switch (ext) {
+            case 'css':
+                if (isFirefox) {
+                    /*
+                    Date: 18 July 2017
+                    Its a bit of a hack but an elegant one regardless. All CSS loads are hacks anyway ;)
+                    Author: stoyanstefanov
+                    Reference URL: http://www.phpied.com/when-is-a-stylesheet-really-loaded/
+                    */
+                    theInclude = document.createElement('style');
+                    theInclude.textContent = '@import "' + filePath + '"';
+                    var poll_1 = setInterval(function () {
+                        try {
+                            theInclude.sheet.cssRules;
+                            clearInterval(poll_1);
+                            setTimeout(function () {
+                                return callback(true);
+                            });
+                        }
+                        catch (ev) { }
+                    }, 10);
+                    onReady(function () {
+                        Rocket.dom.head.appendChild(theInclude);
+                    });
+                }
+                else {
+                    /*
+                    Date: 18 July 2017
+                    This was a problem I had begun to solve but the below authors solved it already. I used
+                    a lot of their code and so they must be thanked.
+     
+                    This is very much courtesy of authors:
+                    Scott Jehl
+                    mmcev106
+     
+                    Reference URL: https://github.com/filamentgroup/loadCSS/blob/master/src/loadCSS.js
+                    */
+                    var stylesheets = document.styleSheets;
+                    theInclude = document.createElement('link');
+                    theInclude.rel = 'stylesheet';
+                    theInclude.href = filePath;
+                    theInclude.media = 'YodasHat';
+                    // Functions
+                    function loadCallback() {
+                        Rocket.event.remove(theInclude, 'load', loadCallback);
+                        theInclude.media = 'all';
+                        if (Rocket.is.function(callback)) {
+                            setTimeout(function () {
+                                return callback(true);
+                            });
+                        }
+                    }
+                    // Execute
+                    Rocket.event.add(theInclude, 'load', loadCallback);
+                    onReady(function () {
+                        Rocket.dom.head.appendChild(theInclude);
+                    });
+                }
+                break;
+            case 'js':
+                theInclude = document.createElement('script');
+                theInclude.setAttribute('async', true);
+                theInclude.src = filePath;
+                // Complete callback
+                theInclude.onload = function () {
+                    if (Rocket.is.function(callback)) {
+                        return callback(true);
+                    }
+                };
+                theInclude.onreadystatechange = function () {
+                    if (!this.readyState || this.readyState === 'loaded' || this.readyState === 'complete') {
+                        this.onreadystatechange = null;
+                        if (Rocket.is.function(callback)) {
+                            return callback(false);
+                        }
+                    }
+                };
+                theInclude.onerror = function () {
+                    if (Rocket.is.function(callback)) {
+                        return callback(false);
+                    }
+                };
+                // Add the script
+                Rocket.dom.head.appendChild(theInclude);
+                break;
         }
-        else if (/(.js)$/.test(file)) {
-            type = 'js';
-            theInclude = document.createElement('script');
-            theInclude.setAttribute('async', true);
-            theInclude.src = filePath;
+    }
+    function onReady(callback) {
+        if (document.body) {
+            return callback();
         }
-        // Listen for completion
-        theInclude.onload = function () {
-            if (type !== 'js' && Object.hasOwnProperty.call(window, "ActiveXObject") && !window['ActiveXObject']) {
-                if (Rocket.is.function(callback)) {
-                    return callback(false);
-                }
-            }
-            if (Rocket.is.function(callback)) {
-                return callback(true);
-            }
-        };
-        theInclude.onreadystatechange = function () {
-            if (!this.readyState || this.readyState === 'loaded' || this.readyState === 'complete') {
-                this.onreadystatechange = null;
-                if (type === 'js' && Rocket.is.function(callback)) {
-                    return callback(false);
-                }
-                if (Rocket.is.function(callback)) {
-                    return callback(true);
-                }
-            }
-        };
-        theInclude.onerror = function () {
-            if (Rocket.is.function(callback)) {
-                return callback(false);
-            }
-        };
-        document.getElementsByTagName('head')[0].appendChild(theInclude);
+        setTimeout(function () {
+            onReady(callback);
+        });
     }
     // Load module files
     function loadModuleFiles(thisModule, callback) {
@@ -270,7 +326,7 @@ var RockMod_Require;
         // Continue
         for (var _i = 0, files_1 = files; _i < files_1.length; _i++) {
             var file = files_1[_i];
-            loadFile(file, function (response) {
+            loadFile(file, function (resp) {
                 count--;
                 if (count === 0) {
                     thisModule.loaded = true;
@@ -370,7 +426,9 @@ var RockMod_Require;
                     loadModule(thisModule, function () {
                         count--;
                         if (count === 0) {
-                            return callback();
+                            setTimeout(function () {
+                                return callback();
+                            });
                         }
                     });
                 }
