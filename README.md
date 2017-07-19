@@ -79,7 +79,7 @@ rocketTools: {
 This is just a useful shorthand feature.
 
 ## Modules
-All require modules are manage globally. To add define the different modules names and the accompanying files.
+All require modules are managed globally. To add define the different modules names and the accompanying files.
 
 ```javascript
 Rocket.module.add({
