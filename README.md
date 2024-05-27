@@ -1,3 +1,5 @@
+**NO LONGER SUPPORTED**
+
 # Rocket Require
 A script and stylesheet loading module.
 
@@ -203,7 +205,6 @@ While the solution is working in all tests please note that there might be edge 
 ## Author
 Created and maintained by Chris Humboldt<br>
 Website: <a href="http://chrishumboldt.com/">chrishumboldt.com</a><br>
-Twitter: <a href="https://twitter.com/chrishumboldt">twitter.com/chrishumboldt</a><br>
 GitHub <a href="https://github.com/chrishumboldt">github.com/chrishumboldt</a><br>
 
 ## Copyright and License
